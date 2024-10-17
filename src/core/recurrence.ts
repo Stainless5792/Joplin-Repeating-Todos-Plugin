@@ -47,6 +47,40 @@ export async function updateAllRecurrences(){
 }
 
 
+export async function setWeeklyRecurrence(){
+    // 1. 首先检查是否 存在Record，没有的话 insert一个
+    var selectedNote = await joplin.workspace.selectedNote()
+    var oldRecurrence = await getRecord(selectedNote.id)
+
+    var weeklyRecurrence = new Recurrence()
+    weeklyRecurrence.enabled = true
+    weeklyRecurrence.interval = 'week'
+
+    if (oldRecurrence == null){
+        await createRecord(selectedNote.id, weeklyRecurrence)
+    }else{
+        await updateRecord(selectedNote.id, weeklyRecurrence)
+    }
+
+
+    // 2. 然后更新 Record，weekly 重复
+    // updateRecord(todo.id, recurrence)
+
+
+    // var startOfToday = new Date();
+    // startOfToday.setHours(0,0,0,0);
+    // for (var note of await getAllNotes()){
+    //     var recurrence = await getRecord(note.id)
+    //     var dueDate = new Date(note.todo_due)
+    //     if ((note.todo_due != 0) && (recurrence != null) && (recurrence.enabled) && (dueDate < startOfToday)){
+    //         var newDueDate = startOfToday
+    //         newDueDate.setHours(dueDate.getHours(), dueDate.getMinutes(), dueDate.getSeconds(), dueDate.getMilliseconds())
+    //         await setTaskDueDate(note.id, newDueDate)
+    //         await sleep(1000)
+    //     }
+    // }
+    // joplin.views.dialogs.showMessageBox("Overdue Tasks Rescheduled")
+}
 export async function setOverdueTodosToToday(){
     var startOfToday = new Date();
     startOfToday.setHours(0,0,0,0);
