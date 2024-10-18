@@ -65,6 +65,7 @@ export async function setWeeklyRecurrence() {
         await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 每周重复一次")
+    openRecurrenceDialog()
     // 输出日志，确认添加了每周重复
     console.log("Weekly repeat added to node: ", selectedNote.id);
     console.log("Weekly repeat added to node: ", selectedNote.title);
@@ -96,6 +97,7 @@ export async function setDailyRecurrence(){
     }
     joplin.views.dialogs.showMessageBox("已设置为: 工作日每天重复")
     // 输出日志，确认添加了每周重复
+    openRecurrenceDialog()
     console.log("Weekday repeat added to node: ", selectedNote.id);
     console.log("Weekday repeat added to node: ", selectedNote.title);
 }
