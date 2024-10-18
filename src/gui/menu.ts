@@ -13,6 +13,7 @@ export async function setupMenu(){
             {commandName: 'updateAllRecurrences'},
             {commandName: 'updateOverdueTodos'},
             {commandName: 'setWeeklyRecurrence',accelerator: "Ctrl+Shift+W"},
+            {commandName: 'setDailyRecurrence',accelerator: "Ctrl+Shift+D"},
             {commandName: 'setOverdueTodosToToday'}
         ],
         MenuItemLocation.Tools

@@ -46,26 +46,58 @@ export async function updateAllRecurrences(){
     updating = false;
 }
 
-
-export async function setWeeklyRecurrence(){
-    var selectedNote = await joplin.workspace.selectedNote()
-    var oldRecurrence = await getRecord(selectedNote.id)
+export async function setWeeklyRecurrence() {
+    // 获取当前选中的笔记
+    var selectedNote = await joplin.workspace.selectedNote();
+    // 获取当前选中笔记的旧的重复记录
+    var oldRecurrence = await getRecord(selectedNote.id);
     
-    var weeklyRecurrence = new Recurrence()
-    weeklyRecurrence.enabled = true
-    weeklyRecurrence.interval = 'week'
+    // 创建一个新的每周重复的实例
+    var weeklyRecurrence = new Recurrence();
+    weeklyRecurrence.enabled = true; // 启用重复
+    weeklyRecurrence.interval = 'week'; // 设置重复间隔为每周
     
-    // 1. 首先检查是否 存在Record，没有的话 insert一个
-    // 2. 然后更新 Record，weekly 重复
-    if (oldRecurrence == null){
-        await createRecord(selectedNote.id, weeklyRecurrence)
-    }else{
-        await updateRecord(selectedNote.id, weeklyRecurrence)
+    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+    // 2. 如果存在，更新Record以设置为每周重复
+    if (oldRecurrence == null) {
+        await createRecord(selectedNote.id, weeklyRecurrence); // 创建新的重复记录
+    } else {
+        await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
     }
-    console.info("Weekly repeat added to node: ", selectedNote.id);
-    console.info("Weekly repeat added to node: ", selectedNote.title);
+    joplin.views.dialogs.showMessageBox("已设置重复级别: 每周")
+    // 输出日志，确认添加了每周重复
+    console.log("Weekly repeat added to node: ", selectedNote.id);
+    console.log("Weekly repeat added to node: ", selectedNote.title);
+}
 
 
+export async function setDailyRecurrence(){
+    // 获取当前选中的笔记
+    var selectedNote = await joplin.workspace.selectedNote();
+    // 获取当前选中笔记的旧的重复记录
+    var oldRecurrence = await getRecord(selectedNote.id);
+    
+    // 创建一个新的每周重复的实例
+    var weeklyRecurrence = new Recurrence();
+    weeklyRecurrence.enabled = true; // 启用重复
+    weeklyRecurrence.interval = 'week'; // 设置重复间隔为每周
+    weeklyRecurrence.weekMonday = true; // 设置周一为每周重复
+    weeklyRecurrence.weekTuesday = true; // 设置周二为每周重复  
+    weeklyRecurrence.weekWednesday = true; // 设置周三为每周重复
+    weeklyRecurrence.weekThursday = true; // 设置周四为每周重复
+    weeklyRecurrence.weekFriday = true; // 设置周五为每周重复
+    
+    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+    // 2. 如果存在，更新Record以设置为每周重复
+    if (oldRecurrence == null) {
+        await createRecord(selectedNote.id, weeklyRecurrence); // 创建新的重复记录
+    } else {
+        await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
+    }
+    joplin.views.dialogs.showMessageBox("已设置重复级别: 工作日每天")
+    // 输出日志，确认添加了每周重复
+    console.log("Weekday repeat added to node: ", selectedNote.id);
+    console.log("Weekday repeat added to node: ", selectedNote.title);
 }
 export async function setOverdueTodosToToday(){
     var startOfToday = new Date();
