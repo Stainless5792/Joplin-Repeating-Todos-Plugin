@@ -46,6 +46,57 @@ export async function updateAllRecurrences(){
     updating = false;
 }
 
+// 取消重复
+export async function setNoRecurrence() {
+    // 获取当前选中的笔记
+    var selectedNote = await joplin.workspace.selectedNote();
+    // 获取当前选中笔记的旧的重复记录
+    var oldRecurrence = await getRecord(selectedNote.id);
+    
+    // 创建一个新的重复的实例
+    var noRecurrence = new Recurrence();
+    noRecurrence.enabled = false; // 取消重复
+    
+    if (oldRecurrence == null) {
+        await createRecord(selectedNote.id, noRecurrence); // 创建新的重复记录
+    } else {
+        await updateRecord(selectedNote.id, noRecurrence); // 更新现有的重复记录
+    }
+    joplin.views.dialogs.showMessageBox("已设置为: 取消重复")
+    openRecurrenceDialog()
+    // 输出日志，确认添加了每月重复
+    console.log("Monthly repeat added to node: ", selectedNote.id);
+    console.log("Monthly repeat added to node: ", selectedNote.title);
+}
+
+// 每月重复一次
+export async function setMonthlyRecurrence() {
+    // 获取当前选中的笔记
+    var selectedNote = await joplin.workspace.selectedNote();
+    // 获取当前选中笔记的旧的重复记录
+    var oldRecurrence = await getRecord(selectedNote.id);
+    
+    // 创建一个新的每月重复的实例
+    var monthlyRecurrence = new Recurrence();
+    monthlyRecurrence.enabled = true; // 启用重复
+    monthlyRecurrence.interval = 'month'; // 设置重复间隔为每月
+    
+    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+    // 2. 如果存在，更新Record以设置为每月重复
+    if (oldRecurrence == null) {
+        await createRecord(selectedNote.id, monthlyRecurrence); // 创建新的重复记录
+    } else {
+        await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
+    }
+    joplin.views.dialogs.showMessageBox("已设置为: 每月重复一次")
+    openRecurrenceDialog()
+    // 输出日志，确认添加了每月重复
+    console.log("Monthly repeat added to node: ", selectedNote.id);
+    console.log("Monthly repeat added to node: ", selectedNote.title);
+}
+
+
+// 每周重复一次
 export async function setWeeklyRecurrence() {
     // 获取当前选中的笔记
     var selectedNote = await joplin.workspace.selectedNote();

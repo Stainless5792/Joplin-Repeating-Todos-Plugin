@@ -12,6 +12,8 @@ export async function setupMenu(){
         [
             {commandName: 'updateAllRecurrences'},
             {commandName: 'updateOverdueTodos'},
+            {commandName: 'setNoRecurrence',accelerator: "Ctrl+Shift+U"},
+            {commandName: 'setMonthlyRecurrence',accelerator: "Ctrl+Shift+M"},
             {commandName: 'setWeeklyRecurrence',accelerator: "Ctrl+Shift+W"},
             {commandName: 'setDailyRecurrence',accelerator: "Ctrl+Shift+D"},
             {commandName: 'openRecurrenceDialog',accelerator: "Ctrl+Shift+O"},
