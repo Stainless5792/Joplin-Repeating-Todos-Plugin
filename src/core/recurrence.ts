@@ -2,7 +2,7 @@
 import joplin from 'api';
 import { openDialog } from '../gui/dialog/dialog';
 import { createRecord, getAllRecords, getRecord, updateRecord, deleteRecord} from './database';
-import { getAllNotes, getNote, markTaskIncomplete, setTaskDueDate, markSubTasksIncomplete, markTaskComplete } from "./joplin";
+import { getAllNotes, getNote, markTaskIncomplete, setTaskDueDate,unsetTaskDueDate, markSubTasksIncomplete, markTaskComplete } from "./joplin";
 import { Recurrence } from '../model/recurrence';
 import { sleep } from './misc';
 import { start } from 'repl';
@@ -63,10 +63,29 @@ export async function setNoRecurrence() {
         await updateRecord(selectedNote.id, noRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 取消重复")
+    unsetTaskDueDate(selectedNote.id)
     openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
     console.log("Monthly repeat added to node: ", selectedNote.id);
     console.log("Monthly repeat added to node: ", selectedNote.title);
+}
+
+// toggle todo_completed status 
+export async function toggleTodoStatus() {
+    // 获取当前选中的笔记
+    var selectedNote = await joplin.workspace.selectedNote();
+    var is_todo = selectedNote.is_todo;
+
+    if (is_todo) {
+        var todo_completed = selectedNote.todo_completed;
+        if (todo_completed == 0) {
+            await markTaskComplete(selectedNote.id)
+            joplin.views.dialogs.showMessageBox("标记为: 已完成")
+        } else {
+            await markTaskIncomplete(selectedNote.id)
+            joplin.views.dialogs.showMessageBox("标记为: 未完成")
+        }
+    }
 }
 
 // 每月重复一次
@@ -89,6 +108,9 @@ export async function setMonthlyRecurrence() {
         await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 每月重复一次")
+
+    // 设置alarm 为当前时间
+    await setTaskDueDate(selectedNote.id, new Date())
     openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
     console.log("Monthly repeat added to node: ", selectedNote.id);
@@ -116,6 +138,9 @@ export async function setWeeklyRecurrence() {
         await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 每周重复一次")
+
+    // 设置alarm 为当前时间
+    await setTaskDueDate(selectedNote.id, new Date())
     openRecurrenceDialog()
     // 输出日志，确认添加了每周重复
     console.log("Weekly repeat added to node: ", selectedNote.id);
@@ -147,6 +172,9 @@ export async function setDailyRecurrence(){
         await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 工作日每天重复")
+
+    // 设置alarm 为当前时间
+    await setTaskDueDate(selectedNote.id, new Date())
     // 输出日志，确认添加了每周重复
     openRecurrenceDialog()
     console.log("Weekday repeat added to node: ", selectedNote.id);

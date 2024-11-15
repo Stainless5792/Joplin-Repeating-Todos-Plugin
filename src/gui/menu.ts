@@ -13,6 +13,7 @@ export async function setupMenu(){
             {commandName: 'updateAllRecurrences'},
             {commandName: 'updateOverdueTodos'},
             {commandName: 'setNoRecurrence',accelerator: "Ctrl+Shift+U"},
+            {commandName: 'toggleTodoStatus',accelerator: "Ctrl+Shift+T"},
             {commandName: 'setMonthlyRecurrence',accelerator: "Ctrl+Shift+M"},
             {commandName: 'setWeeklyRecurrence',accelerator: "Ctrl+Shift+W"},
             {commandName: 'setDailyRecurrence',accelerator: "Ctrl+Shift+D"},

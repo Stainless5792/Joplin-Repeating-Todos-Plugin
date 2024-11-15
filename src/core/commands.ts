@@ -1,6 +1,6 @@
 /** Imports ****************************************************************************************************************************************/
 import joplin from "api";
-import { openRecurrenceDialog, setOverdueTodosToToday, updateAllRecurrences, updateOverdueTodos, setWeeklyRecurrence, setDailyRecurrence, setMonthlyRecurrence, setNoRecurrence } from "./recurrence";
+import { openRecurrenceDialog, setOverdueTodosToToday, updateAllRecurrences, updateOverdueTodos, setWeeklyRecurrence, setDailyRecurrence, setMonthlyRecurrence, setNoRecurrence,toggleTodoStatus } from "./recurrence";
 
 /** setupCommands ***********************************************************************************************************************************
  * Sets up all commands used by toolbar buttons and menu items                                                                                      *
@@ -29,6 +29,12 @@ export async function setupCommands(){
         label: 'set todo no recurrence',
         iconName: 'fas fa-redo-alt',
         execute: setNoRecurrence
+    })
+    await joplin.commands.register({
+        name: 'toggleTodoStatus',
+        label: 'toggle todo status',
+        iconName: 'fas fa-redo-alt',
+        execute: toggleTodoStatus
     })
     await joplin.commands.register({
         name: 'setMonthlyRecurrence',

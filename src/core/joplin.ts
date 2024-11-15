@@ -63,3 +63,6 @@ export async function markTaskComplete(id){
 export async function setTaskDueDate(id: string, date){
     await joplin.data.put(['notes', id], null, { todo_due: date.getTime()});
 }
+export async function unsetTaskDueDate(id: string){
+    await joplin.data.put(['notes', id], null, { todo_due: 0});
+}
