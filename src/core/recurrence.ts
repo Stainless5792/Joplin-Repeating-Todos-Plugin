@@ -20,6 +20,68 @@ var updating = false;
     var newRecurrence = await openDialog(oldRecurrence)
     if (newRecurrence){
         await updateRecord(selectedNote.id, newRecurrence)
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+        var body = "> " + timestamp + " ";
+
+        // 解析 newRecurrence 中的信息
+        if (newRecurrence.enabled){
+            body += "Repeat Set As:"
+            // Valid values are: ['minute', 'hour', 'day', 'week', 'month', 'year']    
+            if (newRecurrence.interval == "minute"){
+                body += "Every " + newRecurrence.intervalNumber + " minute(s)"
+            } else if (newRecurrence.interval == "hour"){
+                body += "Every " + newRecurrence.intervalNumber + " hour(s)"
+            } else if (newRecurrence.interval == "day"){
+                body += "Every " + newRecurrence.intervalNumber + " day(s)"
+            } else if (newRecurrence.interval == "week"){
+                body += "Every " + newRecurrence.intervalNumber + " week(s)"
+                if (newRecurrence.weekSunday){
+                    body += " on Sunday"
+                }
+                if (newRecurrence.weekMonday){
+                    body += " on Monday"
+                }
+                if (newRecurrence.weekTuesday){
+                    body += " on Tuesday"
+                }
+                if (newRecurrence.weekWednesday){
+                    body += " on Wednesday"
+                }
+                if (newRecurrence.weekThursday){
+                    body += " on Thursday"
+                }
+                if (newRecurrence.weekFriday){
+                    body += " on Friday"
+                }
+                if (newRecurrence.weekSaturday){
+                    body += " on Saturday"
+                }
+            } else if (newRecurrence.interval == "month"){
+                body += "Every " + newRecurrence.intervalNumber + " month(s)"
+                if (newRecurrence.monthWeekday){
+                    body += " on " + newRecurrence.monthOrdinal + " " + newRecurrence.monthWeekday
+                }
+            } else if (newRecurrence.interval == "year"){
+                body += "Every " + newRecurrence.intervalNumber + " year(s)"
+            }
+            
+            if (newRecurrence.stopType == "date"){
+                body += " ;Stop after " + newRecurrence.stopDate
+            } else if (newRecurrence.stopType == "number"){
+                body += " ;Stop after " + newRecurrence.stopNumber + " times"
+            }
+        } else {
+            body += "Repeat Set As: No Repeat!"
+        }
+        body += "\n" + note.body;
+        console.log("body:" + body)
+        // 更新当前笔记的 body
+        await joplin.data.put(['notes', selectedNote.id], null, { body: body });
     }
 }
 
@@ -64,6 +126,18 @@ export async function setNoRecurrence() {
     }
     joplin.views.dialogs.showMessageBox("已设置为: 取消重复")
     unsetTaskDueDate(selectedNote.id)
+
+    // 获取当前笔记的 body
+    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+    // 获取当前时间的时间戳
+    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+    var body = "> " + timestamp + " Repeat Set As: No Repeat!";
+    body += "\n" + note.body;
+    console.log("body:" + body)
+    // 更新当前笔记的 body
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+
     openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
     console.log("Monthly repeat added to node: ", selectedNote.id);
@@ -109,6 +183,17 @@ export async function setMonthlyRecurrence() {
     }
     joplin.views.dialogs.showMessageBox("已设置为: 每月重复一次")
 
+    // 获取当前笔记的 body
+    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+    // 获取当前时间的时间戳
+    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+    var body = "> " + timestamp + " Repeat Set As: Monthly";
+    body += "\n" + note.body;
+    console.log("body:" + body)
+    // 更新当前笔记的 body
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date())
     openRecurrenceDialog()
@@ -138,6 +223,17 @@ export async function setWeeklyRecurrence() {
         await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 每周重复一次")
+
+    // 获取当前笔记的 body
+    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+    // 获取当前时间的时间戳
+    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+    var body = "> " + timestamp + " Repeat Set As: Weekly";
+    body += "\n" + note.body;
+    console.log("body:" + body)
+    // 更新当前笔记的 body
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
 
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date())
@@ -172,6 +268,17 @@ export async function setDailyRecurrence(){
         await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
     }
     joplin.views.dialogs.showMessageBox("已设置为: 工作日每天重复")
+
+    // 获取当前笔记的 body
+    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+    // 获取当前时间的时间戳
+    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+    var body = "> " + timestamp + " Repeat Set As: Daily On Weekdays";
+    body += "\n" + note.body;
+    console.log("body:" + body)
+    // 更新当前笔记的 body
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
 
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date())
