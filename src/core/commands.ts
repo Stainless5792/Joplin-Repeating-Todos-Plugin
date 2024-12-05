@@ -1,6 +1,7 @@
 /** Imports ****************************************************************************************************************************************/
 import joplin from "api";
 import { openRecurrenceDialog, setOverdueTodosToToday, updateAllRecurrences, updateOverdueTodos, setWeeklyRecurrence, setDailyRecurrence, setMonthlyRecurrence, setNoRecurrence,toggleTodoStatus } from "./recurrence";
+import { openSearchNoteByTitleDialog } from "./search";
 
 /** setupCommands ***********************************************************************************************************************************
  * Sets up all commands used by toolbar buttons and menu items                                                                                      *
@@ -53,6 +54,20 @@ export async function setupCommands(){
         label: 'set todo weekday recurrence',
         iconName: 'fas fa-redo-alt',
         execute: setDailyRecurrence
+    })
+
+    await joplin.commands.register({
+        name: 'openRecurrenceDialog',
+        label: 'Open Recurrence Dialog',
+        iconName: 'fas fa-redo-alt',
+        execute: openRecurrenceDialog
+    })
+
+    await joplin.commands.register({
+        name: 'openSearchNoteByTitleDialog',
+        label: 'Open SearchNoteByTitle Dialog',
+        iconName: 'fas fa-redo-alt',
+        execute: openSearchNoteByTitleDialog
     })
 
     await joplin.commands.register({

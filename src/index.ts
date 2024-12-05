@@ -2,6 +2,7 @@
 import joplin from 'api';
 import { setupDatabase } from './core/database';
 import { setupDialog } from './gui/dialog/dialog';
+import { setupSearchDialog } from './gui/searchdialog/searchdialog';
 import { setupMenu } from './gui/menu';
 import { setupTimer } from './core/timer';
 import { setupSettings } from './core/settings';
@@ -23,6 +24,7 @@ async function main() {
     await setupSettings()
     await setupCommands()
     await setupDialog()
+    await setupSearchDialog()
     await setupMenu()
     await setupToolbar()
     await setupTimer()
