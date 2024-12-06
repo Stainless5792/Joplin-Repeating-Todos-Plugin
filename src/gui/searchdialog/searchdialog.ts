@@ -45,6 +45,7 @@ export async function openSearchDialog(){
         }
     ]
     await joplin.views.dialogs.setButtons(searchdialog, buttons);
+    // await joplin.views.dialogs.setFitToContent(searchdialog, false);
     console.log(`Opening Search Dialog`)
     let formResult = await joplin.views.dialogs.open(searchdialog)
 
@@ -60,18 +61,19 @@ export async function openSearchDialog(){
             }
         }
         if (formResult.id == 'ok' && formResult.formData.searchForm.searchText !== '') {
-            console.log(`Searching for: ` + JSON.stringify(formResult.formData.searchForm.searchText))
+            // console.log(`Searching for: ` + JSON.stringify(formResult.formData.searchForm.searchText))
             const result = await searchNoteByTitle(formResult.formData.searchForm.searchText)
+
             const note_result = result.filter(item => item.is_todo == 0).sort((a, b) => a.title.localeCompare(b.title))
             const todo_result = result.filter(item => item.is_todo !== 0).sort((a, b) => a.title.localeCompare(b.title))
             const completed_todo_result = todo_result.filter(item => item.todo_completed !== 0).sort((a, b) => a.title.localeCompare(b.title))
             const incompleted_todo_result = todo_result.filter(item => item.todo_completed == 0).sort((a, b) => a.title.localeCompare(b.title))
-            console.log(`result: ` + JSON.stringify(result))
+            // console.log(`result: ` + JSON.stringify(result))
 
-            const search_String = `\n Search Title With: '` + formResult.formData.searchForm.searchText + `'`
+            const search_String = `\n Search Title With(Use Regex): '` + formResult.formData.searchForm.searchText + `'`
             const Total_String = search_String + `\n Fount Total Count: ` + result.length + `\n Note Result: ` + note_result.length + `\n Todo Result: ` + todo_result.length + `\n Completed Todo Result: ` + completed_todo_result.length + `\n Incompleted Todo Result: ` + incompleted_todo_result.length
             const copy_String = `Click 'OK' tp Copy Result to Clipboard`
-            const show_Message = Total_String + "\n\n" + copy_String
+            // const show_Message = Total_String + "\n\n" + copy_String
             
             // DONE : 数据根据 title 排序
             // DONE: 去除不必要的字段
@@ -113,7 +115,7 @@ export async function openSearchDialog(){
             }else {
                 md_string += `### Todo Result: 0 \n\n`
             }
-            const click = await joplin.views.dialogs.showMessageBox(show_Message + md_string)
+            const click = await joplin.views.dialogs.showMessageBox(md_string)
             if (click == 0) {
                 await joplin.clipboard.writeText(md_string);
             }else 

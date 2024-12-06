@@ -4,6 +4,14 @@
 
 fieldset {
     margin: 12px 0px;
+    font-size: 16px;
 }
 
+input {
+    font-size: 14px; 
+}
+
+/* form {
+    width: 800px; 
+} */
 
