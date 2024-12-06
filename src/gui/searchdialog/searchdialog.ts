@@ -1,7 +1,6 @@
-/** Imports ****************************************************************************************************************************************/
+/** Imports ***********************************************/
 import joplin from 'api';
-import { recurrenceFromJSON, recurrenceToJSON } from '../../model/recurrence';
-import { searchNoteByTitle } from '../../core/search'
+import { searchNoteByTitle } from '../../core/search';
 
 const fs = joplin.require('fs-extra');
 
@@ -27,6 +26,25 @@ export async function setupSearchDialog(){
  ***************************************************************************************************************************************************/
 export async function openSearchDialog(){
     await joplin.views.dialogs.setHtml(searchdialog, BaseHTML);
+    const buttons: any[] = [
+        {
+            id: 'ok',
+            title: 'Search'
+            // onClick: async () => {
+            //     const result = await searchNoteByTitle(formResult.formData.searchForm.searchText)
+            //     console.log(`Search Result: ` + JSON.stringify(result))
+            //     return result.length
+            // }
+        },
+        {
+            id: 'cancel',
+            title: 'Cancel'
+            // onClick: async () => {
+            //     return 0
+            // }
+        }
+    ]
+    await joplin.views.dialogs.setButtons(searchdialog, buttons);
     console.log(`Opening Search Dialog`)
     let formResult = await joplin.views.dialogs.open(searchdialog)
 
@@ -44,10 +62,10 @@ export async function openSearchDialog(){
         if (formResult.id == 'ok' && formResult.formData.searchForm.searchText !== '') {
             console.log(`Searching for: ` + JSON.stringify(formResult.formData.searchForm.searchText))
             const result = await searchNoteByTitle(formResult.formData.searchForm.searchText)
-            const note_result = result.filter(item => item.is_todo == 0)
-            const todo_result = result.filter(item => item.is_todo !== 0)
-            const completed_todo_result = todo_result.filter(item => item.todo_completed !== 0)
-            const incompleted_todo_result = todo_result.filter(item => item.todo_completed == 0)
+            const note_result = result.filter(item => item.is_todo == 0).sort((a, b) => a.title.localeCompare(b.title))
+            const todo_result = result.filter(item => item.is_todo !== 0).sort((a, b) => a.title.localeCompare(b.title))
+            const completed_todo_result = todo_result.filter(item => item.todo_completed !== 0).sort((a, b) => a.title.localeCompare(b.title))
+            const incompleted_todo_result = todo_result.filter(item => item.todo_completed == 0).sort((a, b) => a.title.localeCompare(b.title))
             console.log(`result: ` + JSON.stringify(result))
 
             const search_String = `\n Search Title With: '` + formResult.formData.searchForm.searchText + `'`
@@ -55,13 +73,14 @@ export async function openSearchDialog(){
             const copy_String = `Click 'OK' tp Copy Result to Clipboard`
             const show_Message = Total_String + "\n\n" + copy_String
             
-            // TODO : 数据根据 title 排序
-            // TODO: 去除不必要的字段
+            // DONE : 数据根据 title 排序
+            // DONE: 去除不必要的字段
+            // DONE: search 区分大小写，basic search && FTS
 
             // markdown result 
             let md_string = `\n\n## Search Result For '` + formResult.formData.searchForm.searchText +`' :\n` + Total_String + `\n\n`
             if (note_result.length > 0) {
-                md_string += `### Note Result:\n\n`
+                md_string += `### Note Result: ` + note_result.length + `\n\n`
                 for (let i = 0; i < note_result.length; i++) {
                     md_string += `- [${note_result[i].title}](:/${note_result[i].id})\n`
                 }
@@ -69,9 +88,9 @@ export async function openSearchDialog(){
                 md_string += `### Note Result: 0 \n\n`
             }
             if (todo_result.length > 0) {
-                md_string += `### Todo Result:\n\n`
+                md_string += `### Todo Result: ` + todo_result.length + `\n\n`
                 if (completed_todo_result.length > 0) {
-                    md_string += `#### Completed Todo Result:\n\n`
+                    md_string += `#### Completed Todo Result: ` + completed_todo_result.length+`/` + todo_result.length + `\n\n`
                     for (let i = 0; i < completed_todo_result.length; i++) {
                         md_string += `- [${completed_todo_result[i].title}](:/${completed_todo_result[i].id})`
                         md_string += ` (Completed) ✅`
@@ -82,7 +101,7 @@ export async function openSearchDialog(){
                 }
 
                 if (incompleted_todo_result.length > 0) {
-                    md_string += `#### Incompleted Todo Result:\n\n`
+                    md_string += `#### Incompleted Todo Result: ` + incompleted_todo_result.length +`/` + todo_result.length + `\n\n`
                     for (let i = 0; i < incompleted_todo_result.length; i++) {
                         md_string += `- [${incompleted_todo_result[i].title}](:/${incompleted_todo_result[i].id})`
                         md_string += ` (Incompleted) ❌`
@@ -102,46 +121,5 @@ export async function openSearchDialog(){
         }
         break
     }
-    // console.log(`Ready for Searching`)
-    // if (formResult.id == 'searchButton' && formResult.formData.searchForm.searchText !== '') {
-    // if (formResult.id == 'ok') {
-    //     var formResult = await joplin.views.dialogs.open(searchdialog)
-    //     console.log(`Ready for Searching`)
-    //     if (formResult.id == 'ok' && formResult.formData.searchForm.searchText !== '') {
-    //         console.log(`Searching for: ` + JSON.stringify(formResult.formData.searchForm.searchText))
-    //         searchNoteByTitle(formResult.formData.searchForm.searchText)
-    //         break
-    //     }else if (formResult.id == 'cancel') {
-    //         break
-    //     }else {
-    //         continue
-    //     }
-
-    // }
-    // while (formResult.id == 'ok') {
-    //     while (formResult.formData.searchForm.searchText === '') {
-    //         await joplin.views.dialogs.showMessageBox("Please provide a search text")
-    //         await joplin.views.dialogs.open(searchdialog)
-    //         break
-    //     }
-    //     if (formResult.formData.searchForm.searchText !== '') {
-    //     // const searchText = formResult.formData.searchForm.searchText
-    //     // var replacedHTML = BaseHTML.replace("search_RESULT", JSON.stringify(`Searching Titles for: ` + searchText))
-    //     console.log(`Searching for: ` + JSON.stringify(formResult.formData.searchForm.searchText))
-    //     console.log(`Searching for: ` + JSON.stringify(formResult.formData.searchForm.searchText.value))
-    //     searchNoteByTitle(formResult.formData.searchForm.searchText.value)
-    //     } else {
-    //         console.log(`No search text provided`)
-    //         await joplin.views.dialogs.showMessageBox("Please provide a search text")
-    //         // await joplin.views.dialogs.open(searchdialog)
-    //     }
-
-        // console.log(`Searching for: ${searchText}`)
-        // await joplin.views.dialogs.setHtml(searchdialog, replacedHTML);
-        // // var formResult = await joplin.views.dialogs.open(searchdialog)
-        // 
-
-        // return recurrenceFromJSON(atob(formResult.formData.recurrenceForm.recurrenceData))
-    // }
 }
 

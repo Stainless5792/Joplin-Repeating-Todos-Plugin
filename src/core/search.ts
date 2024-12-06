@@ -24,11 +24,14 @@ export async function searchNoteByTitle(searchText: string) {
     let allNotes = []
     let page = 1
     // const query = titlesOnly ? `title:${searchText}` : searchText
-    const query = `title:${searchText}`
-    const fields = ['id', 'title', 'is_todo', 'todo_completed', 'order', 'created_time']
+    // https://joplinapp.org/help/apps/search
+    // 不能区分大小写..
+    const basic_query = `title:/${searchText}`
+    const FTS_query = `title:${searchText}`
+    const query = FTS_query
+    const fields = ['title', 'id', 'is_todo', 'todo_completed']
 
     // https://joplinapp.org/help/api/references/rest_api#filtering-data
-    // https://joplinapp.org/help/apps/search
 
     while (true) {
         const res = await joplin.data.get(['search'], {
