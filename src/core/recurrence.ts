@@ -195,7 +195,7 @@ export async function setMonthlyRecurrence() {
     await joplin.data.put(['notes', selectedNote.id], null, { body: body });
 
     // 设置alarm 为当前时间
-    await setTaskDueDate(selectedNote.id, new Date())
+    await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
     openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
     console.log("Monthly repeat added to node: ", selectedNote.id);
@@ -236,7 +236,7 @@ export async function setWeeklyRecurrence() {
     await joplin.data.put(['notes', selectedNote.id], null, { body: body });
 
     // 设置alarm 为当前时间
-    await setTaskDueDate(selectedNote.id, new Date())
+    await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
     openRecurrenceDialog()
     // 输出日志，确认添加了每周重复
     console.log("Weekly repeat added to node: ", selectedNote.id);
@@ -280,8 +280,9 @@ export async function setDailyRecurrence(){
     // 更新当前笔记的 body
     await joplin.data.put(['notes', selectedNote.id], null, { body: body });
 
-    // 设置alarm 为当前时间
-    await setTaskDueDate(selectedNote.id, new Date())
+    // 设置alarm 为当前时间 + 2 hours
+    // await setTaskDueDate(selectedNote.id, new Date())
+    await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
     // 输出日志，确认添加了每周重复
     openRecurrenceDialog()
     console.log("Weekday repeat added to node: ", selectedNote.id);
