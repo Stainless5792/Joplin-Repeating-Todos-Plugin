@@ -30,7 +30,7 @@ var updating = false;
 
         // 解析 newRecurrence 中的信息
         if (newRecurrence.enabled){
-            body += "Repeat Set As:"
+            body += "Repeat Set As: "
             // Valid values are: ['minute', 'hour', 'day', 'week', 'month', 'year']    
             if (newRecurrence.interval == "minute"){
                 body += "Every " + newRecurrence.intervalNumber + " minute(s)"
