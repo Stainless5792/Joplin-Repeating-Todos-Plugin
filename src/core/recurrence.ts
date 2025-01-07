@@ -151,12 +151,34 @@ export async function toggleTodoStatus() {
     var is_todo = selectedNote.is_todo;
 
     if (is_todo) {
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+
+        var body = "";
+        var done_body = "> " + timestamp + " Set Todo Status: 已完成";
+        var undone_body = "> " + timestamp + " Set Todo Status: 未完成";
+
+        done_body += "\n" + note.body;
+        undone_body += "\n" + note.body;
+
         var todo_completed = selectedNote.todo_completed;
         if (todo_completed == 0) {
             await markTaskComplete(selectedNote.id)
+            body = done_body
+            console.log("body:" + body)
+            // 更新当前笔记的 body
+            await joplin.data.put(['notes', selectedNote.id], null, { body: body });
             joplin.views.dialogs.showMessageBox("标记为: 已完成")
         } else {
             await markTaskIncomplete(selectedNote.id)
+            body = undone_body
+            console.log("body:" + body)
+            // 更新当前笔记的 body
+            await joplin.data.put(['notes', selectedNote.id], null, { body: body });
             joplin.views.dialogs.showMessageBox("标记为: 未完成")
         }
     }

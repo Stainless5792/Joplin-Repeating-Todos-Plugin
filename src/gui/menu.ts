@@ -18,7 +18,7 @@ export async function setupMenu(){
             {commandName: 'setWeeklyRecurrence',accelerator: "Ctrl+Shift+W"},
             {commandName: 'setDailyRecurrence',accelerator: "Ctrl+Shift+D"},
             {commandName: 'openRecurrenceDialog',accelerator: "Ctrl+Shift+O"},
-            {commandName: 'openSearchNoteByTitleDialog',accelerator: ""},
+            {commandName: 'openSearchNoteByTitleDialog',accelerator: "Ctrl+Shift+S"},
             {commandName: 'setOverdueTodosToToday'}
         ],
         MenuItemLocation.Tools

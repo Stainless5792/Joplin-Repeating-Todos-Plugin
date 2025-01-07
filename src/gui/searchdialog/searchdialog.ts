@@ -70,8 +70,8 @@ export async function openSearchDialog(){
             const incompleted_todo_result = todo_result.filter(item => item.todo_completed == 0).sort((a, b) => a.title.localeCompare(b.title))
             // console.log(`result: ` + JSON.stringify(result))
 
-            const search_String = `\n Search Title With(Use Regex): '` + formResult.formData.searchForm.searchText + `'`
-            const Total_String = search_String + `\n Fount Total Count: ` + result.length + `\n Note Result: ` + note_result.length + `\n Todo Result: ` + todo_result.length + `\n Completed Todo Result: ` + completed_todo_result.length + `\n Incompleted Todo Result: ` + incompleted_todo_result.length
+            const search_String = `- Search Title With(Use Regex): '` + formResult.formData.searchForm.searchText + `'`
+            const Total_String = search_String + `\n- Fount Total Count: ` + result.length + `\n- Note Result: ` + note_result.length + `\n- Todo Result: ` + todo_result.length + `\n- Completed Todo Result: ` + completed_todo_result.length + `\n- Incompleted Todo Result: ` + incompleted_todo_result.length
             const copy_String = `Click 'OK' tp Copy Result to Clipboard`
             // const show_Message = Total_String + "\n\n" + copy_String
             
@@ -80,19 +80,19 @@ export async function openSearchDialog(){
             // DONE: search 区分大小写，basic search && FTS
 
             // markdown result 
-            let md_string = `\n\n## Search Result For '` + formResult.formData.searchForm.searchText +`' :\n` + Total_String + `\n\n`
+            let md_string = `\n## Search Result For '` + formResult.formData.searchForm.searchText +`' :\n` + Total_String + `\n`
             if (note_result.length > 0) {
-                md_string += `### Note Result: ` + note_result.length + `\n\n`
+                md_string += `\n### Note Result: ` + note_result.length + `\n`
                 for (let i = 0; i < note_result.length; i++) {
                     md_string += `- [${note_result[i].title}](:/${note_result[i].id})\n`
                 }
             }else {
-                md_string += `### Note Result: 0 \n\n`
+                md_string += `\n### Note Result: 0 \n\n`
             }
             if (todo_result.length > 0) {
-                md_string += `### Todo Result: ` + todo_result.length + `\n\n`
+                md_string += `\n### Todo Result: ` + todo_result.length + `\n`
                 if (completed_todo_result.length > 0) {
-                    md_string += `#### Completed Todo Result: ` + completed_todo_result.length+`/` + todo_result.length + `\n\n`
+                    md_string += `#### Completed Todo Result: ` + completed_todo_result.length+`/` + todo_result.length + `\n`
                     for (let i = 0; i < completed_todo_result.length; i++) {
                         md_string += `- [${completed_todo_result[i].title}](:/${completed_todo_result[i].id})`
                         md_string += ` (Completed) ✅`
@@ -103,7 +103,7 @@ export async function openSearchDialog(){
                 }
 
                 if (incompleted_todo_result.length > 0) {
-                    md_string += `#### Incompleted Todo Result: ` + incompleted_todo_result.length +`/` + todo_result.length + `\n\n`
+                    md_string += `#### Incompleted Todo Result: ` + incompleted_todo_result.length +`/` + todo_result.length + `\n`
                     for (let i = 0; i < incompleted_todo_result.length; i++) {
                         md_string += `- [${incompleted_todo_result[i].title}](:/${incompleted_todo_result[i].id})`
                         md_string += ` (Incompleted) ❌`
