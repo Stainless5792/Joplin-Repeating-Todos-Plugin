@@ -11,6 +11,9 @@ import { start } from 'repl';
 var updating = false;
 
 
+export async function resetNoteTitleWithRecurrenceType(noteId: string) {
+}
+
 /** openRecurrenceDialog ****************************************************************************************************************************
  * Opens the recurrence dialog with recurrence data for the current note and saves the recurrence data to the database on dialog closure            *
  ***************************************************************************************************************************************************/
@@ -28,8 +31,28 @@ var updating = false;
         var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
         var body = "> " + timestamp + " ";
 
+        // 判断 note.title 中是否含有 @ 字符
+        // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+        var repeatType = "No_Repeat"
+        var newTitle = ""
+        var titleBeforeAt = ""
+        if (note.title.includes('🔄')) {
+            // 提取 @ 字符之前的字符串
+            titleBeforeAt = note.title.split('🔄')[0].trimRight();
+            console.log("@ 字符之前的字符串: " + titleBeforeAt);
+        } else {
+            titleBeforeAt = note.title
+            console.log("标题中不包含 @ 字符");
+        }
+
         // 解析 newRecurrence 中的信息
         if (newRecurrence.enabled){
+            // 判断 newRecurrence.intervalNumber 是否等于 1
+            if (newRecurrence.intervalNumber == 1) {
+                repeatType = newRecurrence.interval.charAt(0).toUpperCase() + newRecurrence.interval.slice(1) + "ly";
+            } else {
+                repeatType = newRecurrence.intervalNumber + "_" + newRecurrence.interval + "s";
+            }
             body += "Repeat Set As: "
             // Valid values are: ['minute', 'hour', 'day', 'week', 'month', 'year']    
             if (newRecurrence.interval == "minute"){
@@ -61,6 +84,9 @@ var updating = false;
                 if (newRecurrence.weekSaturday){
                     body += " on Saturday"
                 }
+                if (newRecurrence.weekMonday && newRecurrence.weekTuesday && newRecurrence.weekWednesday && newRecurrence.weekThursday && newRecurrence.weekFriday){
+                    repeatType = 'Weekdays'
+                }
             } else if (newRecurrence.interval == "month"){
                 body += "Every " + newRecurrence.intervalNumber + " month(s)"
                 if (newRecurrence.monthWeekday){
@@ -79,9 +105,10 @@ var updating = false;
             body += "Repeat Set As: No Repeat!"
         }
         body += "\n" + note.body;
+        newTitle = titleBeforeAt + " 🔄" + repeatType
         console.log("body:" + body)
         // 更新当前笔记的 body
-        await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+        await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
     }
 }
 
@@ -135,8 +162,25 @@ export async function setNoRecurrence() {
     var body = "> " + timestamp + " Repeat Set As: No Repeat!";
     body += "\n" + note.body;
     console.log("body:" + body)
+
+    // 判断 note.title 中是否含有 @ 字符
+    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+    var repeatType = "No_Repeat"
+    var newTitle = ""
+    var titleBeforeAt = ""
+    if (note.title.includes('🔄')) {
+        // 提取 @ 字符之前的字符串
+        titleBeforeAt = note.title.split('🔄')[0].trimRight();
+        console.log("@ 字符之前的字符串: " + titleBeforeAt);
+    } else {
+        titleBeforeAt = note.title
+        console.log("标题中不包含 @ 字符");
+    }
+
+    newTitle = titleBeforeAt + " 🔄" + repeatType
+
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
 
     openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
@@ -213,8 +257,24 @@ export async function setMonthlyRecurrence() {
     var body = "> " + timestamp + " Repeat Set As: Monthly";
     body += "\n" + note.body;
     console.log("body:" + body)
+
+    // 判断 note.title 中是否含有 @ 字符
+    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+    var repeatType = "Monthly"
+    var newTitle = ""
+    var titleBeforeAt = ""
+    if (note.title.includes('🔄')) {
+        // 提取 @ 字符之前的字符串
+        titleBeforeAt = note.title.split('🔄')[0].trimRight();
+        console.log("@ 字符之前的字符串: " + titleBeforeAt);
+    } else {
+        titleBeforeAt = note.title
+        console.log("标题中不包含 @ 字符");
+    }
+    newTitle = titleBeforeAt + " 🔄" + repeatType
+
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
 
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
@@ -254,8 +314,24 @@ export async function setWeeklyRecurrence() {
     var body = "> " + timestamp + " Repeat Set As: Weekly";
     body += "\n" + note.body;
     console.log("body:" + body)
+
+    // 判断 note.title 中是否含有 @ 字符
+    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+    var repeatType = "Weekly"
+    var newTitle = ""
+    var titleBeforeAt = ""
+    if (note.title.includes('🔄')) {
+        // 提取 @ 字符之前的字符串
+        titleBeforeAt = note.title.split('🔄')[0].trimRight();
+        console.log("@ 字符之前的字符串: " + titleBeforeAt);
+    } else {
+        titleBeforeAt = note.title
+        console.log("标题中不包含 @ 字符");
+    }
+    newTitle = titleBeforeAt + " 🔄" + repeatType
+
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
 
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
@@ -299,8 +375,24 @@ export async function setDailyRecurrence(){
     var body = "> " + timestamp + " Repeat Set As: Daily On Weekdays";
     body += "\n" + note.body;
     console.log("body:" + body)
+
+    // 判断 note.title 中是否含有 @ 字符
+    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+    var repeatType = "Weekdays"
+    var newTitle = ""
+    var titleBeforeAt = ""
+    if (note.title.includes('🔄')) {
+        // 提取 @ 字符之前的字符串
+        titleBeforeAt = note.title.split('🔄')[0].trimRight();
+        console.log("@ 字符之前的字符串: " + titleBeforeAt);
+    } else {
+        titleBeforeAt = note.title
+        console.log("标题中不包含 @ 字符");
+    }
+    newTitle = titleBeforeAt + " 🔄" + repeatType
+
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
 
     // 设置alarm 为当前时间 + 2 hours
     // await setTaskDueDate(selectedNote.id, new Date())

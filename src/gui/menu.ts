@@ -19,6 +19,7 @@ export async function setupMenu(){
             {commandName: 'setDailyRecurrence',accelerator: "Ctrl+Shift+D"},
             {commandName: 'openRecurrenceDialog',accelerator: "Ctrl+Shift+O"},
             {commandName: 'openSearchNoteByTitleDialog',accelerator: "Ctrl+Shift+S"},
+            {commandName: 'openSetNoteAlarmDialog',accelerator: "Ctrl+Shift+A"},
             {commandName: 'setOverdueTodosToToday'}
         ],
         MenuItemLocation.Tools

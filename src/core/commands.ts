@@ -2,6 +2,7 @@
 import joplin from "api";
 import { openRecurrenceDialog, setOverdueTodosToToday, updateAllRecurrences, updateOverdueTodos, setWeeklyRecurrence, setDailyRecurrence, setMonthlyRecurrence, setNoRecurrence,toggleTodoStatus } from "./recurrence";
 import { openSearchNoteByTitleDialog } from "./search";
+import { openSetNoteAlarmDialog } from "./setAlarm";
 
 /** setupCommands ***********************************************************************************************************************************
  * Sets up all commands used by toolbar buttons and menu items                                                                                      *
@@ -68,6 +69,12 @@ export async function setupCommands(){
         label: 'Open SearchNoteByTitle Dialog',
         iconName: 'fas fa-redo-alt',
         execute: openSearchNoteByTitleDialog
+    })
+    await joplin.commands.register({
+        name: 'openSetNoteAlarmDialog',
+        label: 'open SetNoteAlarm Dialog',
+        iconName: 'fas fa-redo-alt',
+        execute: openSetNoteAlarmDialog
     })
 
     await joplin.commands.register({

@@ -1,0 +1,18 @@
+
+fieldset {
+    margin: 12px 0px;
+    font-size: 16px;
+}
+
+input {
+    font-size: 14px; 
+}
+
+.custom-legend {
+    font-size: 12px;
+}
+
+form {
+    width: 200px; 
+}
+
