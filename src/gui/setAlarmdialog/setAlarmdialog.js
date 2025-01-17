@@ -8,11 +8,11 @@ let now = new Date();
 let year = now.getFullYear();
 let month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要加1，并确保两位数
 let day = String(now.getDate()).padStart(2, '0'); // 确保两位数
-// let hours = String(now.getHours()).padStart(2, '0'); // 确保两位数
-// let minutes = String(now.getMinutes()).padStart(2, '0'); // 确保两位数
+let hours = String(now.getHours() + 2).padStart(2, '0'); // 确保两位数, 推迟 2 小时
+let minutes = String(now.getMinutes()).padStart(2, '0'); // 确保两位数
 // let seconds = String(now.getSeconds()).padStart(2, '0'); // 确保两位数
 
-let formattedTime = `${year}-${month}-${day} 18:00`;
+let formattedTime = `${year}-${month}-${day} ${hours}:${minutes}`;
 
 // 设置searchText的value为当前时间
 searchText.value = formattedTime;
