@@ -41,7 +41,7 @@ export async function resetNoteTitleWithRecurrenceType(noteId: string) {
             titleBeforeAt = note.title.split('🔄')[0].trimRight();
             console.log("@ 字符之前的字符串: " + titleBeforeAt);
         } else {
-            titleBeforeAt = note.title
+            titleBeforeAt = note.title.trimRight();
             console.log("标题中不包含 @ 字符");
         }
 
