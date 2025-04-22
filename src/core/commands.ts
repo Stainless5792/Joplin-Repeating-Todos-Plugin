@@ -1,6 +1,6 @@
 /** Imports ****************************************************************************************************************************************/
 import joplin from "api";
-import { openRecurrenceDialog, setOverdueTodosToToday, updateAllRecurrences, updateOverdueTodos, setWeeklyRecurrence, setDailyRecurrence, setMonthlyRecurrence, setNoRecurrence,toggleTodoStatus } from "./recurrence";
+import { openRecurrenceDialog, setOverdueTodosToToday, updateAllRecurrences, updateOverdueTodos, setWeeklyRecurrence, setDailyRecurrence, setYearlyRecurrence,setMonthlyRecurrence, setNoRecurrence,toggleTodoStatus } from "./recurrence";
 import { openSearchNoteByTitleDialog } from "./search";
 import { openSetNoteAlarmDialog } from "./setAlarm";
 
@@ -43,6 +43,12 @@ export async function setupCommands(){
         label: 'set todo Monthly recurrence',
         iconName: 'fas fa-redo-alt',
         execute: setMonthlyRecurrence
+    })
+    await joplin.commands.register({
+        name: 'setYearlyRecurrence',
+        label: 'set todo Yearly recurrence',
+        iconName: 'fas fa-redo-alt',
+        execute: setYearlyRecurrence
     })
     await joplin.commands.register({
         name: 'setWeeklyRecurrence',

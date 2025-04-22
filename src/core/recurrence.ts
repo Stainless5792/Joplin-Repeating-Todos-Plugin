@@ -182,7 +182,7 @@ export async function setNoRecurrence() {
     // 更新当前笔记的 body
     await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
 
-    openRecurrenceDialog()
+    // openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
     console.log("Monthly repeat added to node: ", selectedNote.id);
     console.log("Monthly repeat added to node: ", selectedNote.title);
@@ -227,6 +227,63 @@ export async function toggleTodoStatus() {
         }
     }
 }
+// 每年重复一次
+export async function setYearlyRecurrence() {
+    // 获取当前选中的笔记
+    var selectedNote = await joplin.workspace.selectedNote();
+    // 获取当前选中笔记的旧的重复记录
+    var oldRecurrence = await getRecord(selectedNote.id);
+    
+    // 创建一个新的每月重复的实例
+    var monthlyRecurrence = new Recurrence();
+    monthlyRecurrence.enabled = true; // 启用重复
+    monthlyRecurrence.interval = 'year'; // 设置重复间隔为每月
+    
+    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+    // 2. 如果存在，更新Record以设置为每月重复
+    if (oldRecurrence == null) {
+        await createRecord(selectedNote.id, monthlyRecurrence); // 创建新的重复记录
+    } else {
+        await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
+    }
+    joplin.views.dialogs.showMessageBox("已设置为: 每年重复一次")
+
+    // 获取当前笔记的 body
+    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+    // 获取当前时间的时间戳
+    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+    var body = "> " + timestamp + " Repeat Set As: Yearly";
+    body += "\n" + note.body;
+    console.log("body:" + body)
+
+    // 判断 note.title 中是否含有 @ 字符
+    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+    var repeatType = "Yearly"
+    var newTitle = ""
+    var titleBeforeAt = ""
+    if (note.title.includes('🔄')) {
+        // 提取 @ 字符之前的字符串
+        titleBeforeAt = note.title.split('🔄')[0].trimRight();
+        console.log("@ 字符之前的字符串: " + titleBeforeAt);
+    } else {
+        titleBeforeAt = note.title
+        console.log("标题中不包含 @ 字符");
+    }
+    newTitle = titleBeforeAt + " 🔄" + repeatType
+
+    // 更新当前笔记的 body
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+
+    // 设置alarm 为当前时间
+    await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
+    openRecurrenceDialog()
+    // 输出日志，确认添加了每月重复
+    console.log("Yearly repeat added to node: ", selectedNote.id);
+    console.log("Yearly repeat added to node: ", selectedNote.title);
+}
+
 
 // 每月重复一次
 export async function setMonthlyRecurrence() {
@@ -274,7 +331,7 @@ export async function setMonthlyRecurrence() {
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
 
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
@@ -331,7 +388,7 @@ export async function setWeeklyRecurrence() {
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
 
     // 设置alarm 为当前时间
     await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
@@ -392,7 +449,7 @@ export async function setDailyRecurrence(){
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
 
     // 设置alarm 为当前时间 + 2 hours
     // await setTaskDueDate(selectedNote.id, new Date())
