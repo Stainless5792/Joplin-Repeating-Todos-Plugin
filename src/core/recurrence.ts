@@ -63,29 +63,37 @@ export async function resetNoteTitleWithRecurrenceType(noteId: string) {
                 body += "Every " + newRecurrence.intervalNumber + " day(s)"
             } else if (newRecurrence.interval == "week"){
                 body += "Every " + newRecurrence.intervalNumber + " week(s)"
-                if (newRecurrence.weekSunday){
-                    body += " on Sunday"
-                }
-                if (newRecurrence.weekMonday){
-                    body += " on Monday"
-                }
-                if (newRecurrence.weekTuesday){
-                    body += " on Tuesday"
-                }
-                if (newRecurrence.weekWednesday){
-                    body += " on Wednesday"
-                }
-                if (newRecurrence.weekThursday){
-                    body += " on Thursday"
-                }
-                if (newRecurrence.weekFriday){
-                    body += " on Friday"
-                }
-                if (newRecurrence.weekSaturday){
-                    body += " on Saturday"
-                }
                 if (newRecurrence.weekMonday && newRecurrence.weekTuesday && newRecurrence.weekWednesday && newRecurrence.weekThursday && newRecurrence.weekFriday){
                     repeatType = 'Weekdays'
+                } else {
+                    if (newRecurrence.weekMonday){
+                        body += " on Monday"
+                        repeatType += "/1"
+                    }
+                    if (newRecurrence.weekTuesday){
+                        body += " on Tuesday"
+                        repeatType += "/2"
+                    }
+                    if (newRecurrence.weekWednesday){
+                        body += " on Wednesday"
+                        repeatType += "/3"
+                    }
+                    if (newRecurrence.weekThursday){
+                        body += " on Thursday"
+                        repeatType += "/4"
+                    }
+                    if (newRecurrence.weekFriday){
+                        body += " on Friday"
+                        repeatType += "/5"
+                    }
+                    if (newRecurrence.weekSaturday){
+                        body += " on Saturday"
+                        repeatType += "/6"
+                    }
+                    if (newRecurrence.weekSunday){
+                        body += " on Sunday"
+                        repeatType += "/7"
+                    }
                 }
             } else if (newRecurrence.interval == "month"){
                 body += "Every " + newRecurrence.intervalNumber + " month(s)"
