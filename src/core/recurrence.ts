@@ -6,6 +6,7 @@ import { getAllNotes, getNote, markTaskIncomplete, setTaskDueDate,unsetTaskDueDa
 import { Recurrence } from '../model/recurrence';
 import { sleep } from './misc';
 import { start } from 'repl';
+import { openSetNoteAlarmDialog } from './setAlarm';
 
 
 var updating = false;
@@ -118,6 +119,8 @@ export async function resetNoteTitleWithRecurrenceType(noteId: string) {
         // 更新当前笔记的 body
         await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
     }
+
+    openSetNoteAlarmDialog();
 }
 
 /** updateDatabase **********************************************************************************************************************************

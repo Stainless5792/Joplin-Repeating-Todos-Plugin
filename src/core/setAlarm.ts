@@ -11,7 +11,26 @@ import { setTaskDueDate } from "./joplin";
 //   openSearchDialog();
 // }
 export async function openSetNoteAlarmDialog() {
-  openAlarmDialog();
+  var selectedNote = await joplin.workspace.selectedNote()
+  // get alarm for note
+  const beforeAlarm = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'todo_due'] });
+  // const beforeAlarm = await joplin.data.get(['alarms', selectedNote.id], { fields: ['id', 'note_id', 'trigger_time'] });
+  const triggerTime = beforeAlarm.todo_due; // Epoch 毫秒时间戳
+  console.log("triggerTime:" + triggerTime)
+
+
+  // 转换为本地时间字符串（如果系统时区是 UTC+8，则自动为北京时间）
+  const utc8Time = new Date(triggerTime).toLocaleString('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    // second: '2-digit',
+  }).replace(/\//g, '-');
+
+  openAlarmDialog(utc8Time);
 }
 
 /** setNoteAlarm ***

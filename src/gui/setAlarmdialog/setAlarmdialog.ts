@@ -24,8 +24,13 @@ export async function setAlarmdialog(){
 /** openDialog **************************************************************************************************************************************
  * Opens the recurrence dialog for the given noteID                                                                                                 *
  ***************************************************************************************************************************************************/
-export async function openAlarmDialog(){
-    await joplin.views.dialogs.setHtml(alarmdialog, BaseHTML);
+export async function openAlarmDialog(utc8Time){
+    // await joplin.views.dialogs.setHtml(alarmdialog, BaseHTML);
+    // 使用 replace 方法将 span 标签内的内容替换为 utc8Time
+    let modifiedHTML = BaseHTML.replace('@@beforeAlarmValue@@', utc8Time);
+    
+    // 将修改后的 HTML 设置到对话框中
+    await joplin.views.dialogs.setHtml(alarmdialog, modifiedHTML);
     const buttons: any[] = [
         {
             id: 'ok',
