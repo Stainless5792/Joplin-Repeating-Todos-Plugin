@@ -117,7 +117,8 @@ export async function resetNoteTitleWithRecurrenceType(noteId: string) {
         newTitle = titleBeforeAt + " 🔄" + repeatType
         console.log("body:" + body)
         // 更新当前笔记的 body
-        await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+        await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle});
     }
 
     openSetNoteAlarmDialog();
@@ -191,7 +192,8 @@ export async function setNoRecurrence() {
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle});
 
     // openRecurrenceDialog()
     // 输出日志，确认添加了每月重复
@@ -226,15 +228,15 @@ export async function toggleTodoStatus() {
             body = done_body
             console.log("body:" + body)
             // 更新当前笔记的 body
-            await joplin.data.put(['notes', selectedNote.id], null, { body: body });
-            joplin.views.dialogs.showMessageBox("标记为: 已完成")
+            // await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+            // joplin.views.dialogs.showMessageBox("标记为: 已完成")
         } else {
             await markTaskIncomplete(selectedNote.id)
             body = undone_body
             console.log("body:" + body)
             // 更新当前笔记的 body
-            await joplin.data.put(['notes', selectedNote.id], null, { body: body });
-            joplin.views.dialogs.showMessageBox("标记为: 未完成")
+            // await joplin.data.put(['notes', selectedNote.id], null, { body: body });
+            // joplin.views.dialogs.showMessageBox("标记为: 未完成")
         }
     }
 }
@@ -284,7 +286,8 @@ export async function setYearlyRecurrence() {
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
     // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
 
     // 设置alarm 为当前时间
@@ -342,7 +345,8 @@ export async function setMonthlyRecurrence() {
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
 
     // 设置alarm 为当前时间
     // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
@@ -399,7 +403,8 @@ export async function setWeeklyRecurrence() {
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
 
     // 设置alarm 为当前时间
     // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
@@ -460,7 +465,8 @@ export async function setDailyRecurrence(){
     newTitle = titleBeforeAt + " 🔄" + repeatType
 
     // 更新当前笔记的 body
-    await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
 
     // 设置alarm 为当前时间 + 2 hours
     // await setTaskDueDate(selectedNote.id, new Date())
