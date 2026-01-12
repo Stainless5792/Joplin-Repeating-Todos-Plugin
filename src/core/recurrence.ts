@@ -119,9 +119,8 @@ export async function resetNoteTitleWithRecurrenceType(noteId: string) {
         // 更新当前笔记的 body
         // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
         await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle});
+        openSetNoteAlarmDialog();
     }
-
-    openSetNoteAlarmDialog();
 }
 
 /** updateDatabase **********************************************************************************************************************************
@@ -158,47 +157,50 @@ export async function setNoRecurrence() {
     var noRecurrence = new Recurrence();
     noRecurrence.enabled = false; // 取消重复
     
-    if (oldRecurrence == null) {
-        await createRecord(selectedNote.id, noRecurrence); // 创建新的重复记录
-    } else {
-        await updateRecord(selectedNote.id, noRecurrence); // 更新现有的重复记录
+    var ok_cancel = await joplin.views.dialogs.showMessageBox("是否设置为: 取消重复")
+    if(ok_cancel === 0){
+        if (oldRecurrence == null) {
+            await createRecord(selectedNote.id, noRecurrence); // 创建新的重复记录
+        } else {
+            await updateRecord(selectedNote.id, noRecurrence); // 更新现有的重复记录
+        }
+        // joplin.views.dialogs.showMessageBox("已设置为: 取消重复")
+        unsetTaskDueDate(selectedNote.id)
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+        var body = "> " + timestamp + " Repeat Set As: No Repeat!";
+        body += "\n" + note.body;
+        console.log("body:" + body)
+
+        // 判断 note.title 中是否含有 @ 字符
+        // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+        var repeatType = "No_Repeat"
+        var newTitle = ""
+        var titleBeforeAt = ""
+        if (note.title.includes('🔄')) {
+            // 提取 @ 字符之前的字符串
+            titleBeforeAt = note.title.split('🔄')[0].trimRight();
+            console.log("@ 字符之前的字符串: " + titleBeforeAt);
+        } else {
+            titleBeforeAt = note.title
+            console.log("标题中不包含 @ 字符");
+        }
+
+        newTitle = titleBeforeAt + " 🔄" + repeatType
+
+        // 更新当前笔记的 body
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+        await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle});
+
+        // openRecurrenceDialog()
+        // 输出日志，确认添加了每月重复
+        console.log("Monthly repeat added to node: ", selectedNote.id);
+        console.log("Monthly repeat added to node: ", selectedNote.title);
     }
-    joplin.views.dialogs.showMessageBox("已设置为: 取消重复")
-    unsetTaskDueDate(selectedNote.id)
-
-    // 获取当前笔记的 body
-    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
-    // 获取当前时间的时间戳
-    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
-    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
-    var body = "> " + timestamp + " Repeat Set As: No Repeat!";
-    body += "\n" + note.body;
-    console.log("body:" + body)
-
-    // 判断 note.title 中是否含有 @ 字符
-    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
-    var repeatType = "No_Repeat"
-    var newTitle = ""
-    var titleBeforeAt = ""
-    if (note.title.includes('🔄')) {
-        // 提取 @ 字符之前的字符串
-        titleBeforeAt = note.title.split('🔄')[0].trimRight();
-        console.log("@ 字符之前的字符串: " + titleBeforeAt);
-    } else {
-        titleBeforeAt = note.title
-        console.log("标题中不包含 @ 字符");
-    }
-
-    newTitle = titleBeforeAt + " 🔄" + repeatType
-
-    // 更新当前笔记的 body
-    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
-    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle});
-
-    // openRecurrenceDialog()
-    // 输出日志，确认添加了每月重复
-    console.log("Monthly repeat added to node: ", selectedNote.id);
-    console.log("Monthly repeat added to node: ", selectedNote.title);
 }
 
 // toggle todo_completed status 
@@ -252,50 +254,55 @@ export async function setYearlyRecurrence() {
     monthlyRecurrence.enabled = true; // 启用重复
     monthlyRecurrence.interval = 'year'; // 设置重复间隔为每月
     
-    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
-    // 2. 如果存在，更新Record以设置为每月重复
-    if (oldRecurrence == null) {
-        await createRecord(selectedNote.id, monthlyRecurrence); // 创建新的重复记录
-    } else {
-        await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
+    var ok_cancel = await joplin.views.dialogs.showMessageBox("是否设置为: 每年重复一次")
+    // 1. 调用对话框并等待返回结果
+    // 0 代表用户点击了 "OK"，1 代表点击了 "Cancel"
+    if(ok_cancel === 0){
+            
+        // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+        // 2. 如果存在，更新Record以设置为每月重复
+        if (oldRecurrence == null) {
+            await createRecord(selectedNote.id, monthlyRecurrence); // 创建新的重复记录
+        } else {
+            await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
+        }
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+        var body = "> " + timestamp + " Repeat Set As: Yearly";
+        body += "\n" + note.body;
+        console.log("body:" + body)
+
+        // 判断 note.title 中是否含有 @ 字符
+        // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+        var repeatType = "Yearly"
+        var newTitle = ""
+        var titleBeforeAt = ""
+        if (note.title.includes('🔄')) {
+            // 提取 @ 字符之前的字符串
+            titleBeforeAt = note.title.split('🔄')[0].trimRight();
+            console.log("@ 字符之前的字符串: " + titleBeforeAt);
+        } else {
+            titleBeforeAt = note.title
+            console.log("标题中不包含 @ 字符");
+        }
+        newTitle = titleBeforeAt + " 🔄" + repeatType
+
+        // 更新当前笔记的 body
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+        await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
+
+        // 设置alarm 为当前时间
+        // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
+        openRecurrenceDialog()
+        // 输出日志，确认添加了每月重复
+        console.log("Yearly repeat added to node: ", selectedNote.id);
+        console.log("Yearly repeat added to node: ", selectedNote.title);
     }
-    joplin.views.dialogs.showMessageBox("已设置为: 每年重复一次")
-
-    // 获取当前笔记的 body
-    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
-    // 获取当前时间的时间戳
-    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
-    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
-    var body = "> " + timestamp + " Repeat Set As: Yearly";
-    body += "\n" + note.body;
-    console.log("body:" + body)
-
-    // 判断 note.title 中是否含有 @ 字符
-    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
-    var repeatType = "Yearly"
-    var newTitle = ""
-    var titleBeforeAt = ""
-    if (note.title.includes('🔄')) {
-        // 提取 @ 字符之前的字符串
-        titleBeforeAt = note.title.split('🔄')[0].trimRight();
-        console.log("@ 字符之前的字符串: " + titleBeforeAt);
-    } else {
-        titleBeforeAt = note.title
-        console.log("标题中不包含 @ 字符");
-    }
-    newTitle = titleBeforeAt + " 🔄" + repeatType
-
-    // 更新当前笔记的 body
-    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
-    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
-    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle});
-
-    // 设置alarm 为当前时间
-    // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
-    openRecurrenceDialog()
-    // 输出日志，确认添加了每月重复
-    console.log("Yearly repeat added to node: ", selectedNote.id);
-    console.log("Yearly repeat added to node: ", selectedNote.title);
 }
 
 
@@ -311,49 +318,51 @@ export async function setMonthlyRecurrence() {
     monthlyRecurrence.enabled = true; // 启用重复
     monthlyRecurrence.interval = 'month'; // 设置重复间隔为每月
     
-    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
-    // 2. 如果存在，更新Record以设置为每月重复
-    if (oldRecurrence == null) {
-        await createRecord(selectedNote.id, monthlyRecurrence); // 创建新的重复记录
-    } else {
-        await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
+    var ok_cancel = await joplin.views.dialogs.showMessageBox("是否设置为: 每月重复一次")
+    if(ok_cancel === 0){
+        // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+        // 2. 如果存在，更新Record以设置为每月重复
+        if (oldRecurrence == null) {
+            await createRecord(selectedNote.id, monthlyRecurrence); // 创建新的重复记录
+        } else {
+            await updateRecord(selectedNote.id, monthlyRecurrence); // 更新现有的重复记录
+        }
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+        var body = "> " + timestamp + " Repeat Set As: Monthly";
+        body += "\n" + note.body;
+        console.log("body:" + body)
+
+        // 判断 note.title 中是否含有 @ 字符
+        // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+        var repeatType = "Monthly"
+        var newTitle = ""
+        var titleBeforeAt = ""
+        if (note.title.includes('🔄')) {
+            // 提取 @ 字符之前的字符串
+            titleBeforeAt = note.title.split('🔄')[0].trimRight();
+            console.log("@ 字符之前的字符串: " + titleBeforeAt);
+        } else {
+            titleBeforeAt = note.title
+            console.log("标题中不包含 @ 字符");
+        }
+        newTitle = titleBeforeAt + " 🔄" + repeatType
+
+        // 更新当前笔记的 body
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+        await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
+
+        // 设置alarm 为当前时间
+        // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
+        openRecurrenceDialog()
+        // 输出日志，确认添加了每月重复
+        console.log("Monthly repeat added to node: ", selectedNote.id);
+        console.log("Monthly repeat added to node: ", selectedNote.title);
     }
-    joplin.views.dialogs.showMessageBox("已设置为: 每月重复一次")
-
-    // 获取当前笔记的 body
-    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
-    // 获取当前时间的时间戳
-    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
-    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
-    var body = "> " + timestamp + " Repeat Set As: Monthly";
-    body += "\n" + note.body;
-    console.log("body:" + body)
-
-    // 判断 note.title 中是否含有 @ 字符
-    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
-    var repeatType = "Monthly"
-    var newTitle = ""
-    var titleBeforeAt = ""
-    if (note.title.includes('🔄')) {
-        // 提取 @ 字符之前的字符串
-        titleBeforeAt = note.title.split('🔄')[0].trimRight();
-        console.log("@ 字符之前的字符串: " + titleBeforeAt);
-    } else {
-        titleBeforeAt = note.title
-        console.log("标题中不包含 @ 字符");
-    }
-    newTitle = titleBeforeAt + " 🔄" + repeatType
-
-    // 更新当前笔记的 body
-    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
-    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
-
-    // 设置alarm 为当前时间
-    // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
-    openRecurrenceDialog()
-    // 输出日志，确认添加了每月重复
-    console.log("Monthly repeat added to node: ", selectedNote.id);
-    console.log("Monthly repeat added to node: ", selectedNote.title);
 }
 
 
@@ -369,49 +378,52 @@ export async function setWeeklyRecurrence() {
     weeklyRecurrence.enabled = true; // 启用重复
     weeklyRecurrence.interval = 'week'; // 设置重复间隔为每周
     
-    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
-    // 2. 如果存在，更新Record以设置为每周重复
-    if (oldRecurrence == null) {
-        await createRecord(selectedNote.id, weeklyRecurrence); // 创建新的重复记录
-    } else {
-        await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
+    var ok_cancel = await joplin.views.dialogs.showMessageBox("是否设置为: 每周重复一次")
+    if(ok_cancel === 0){
+            
+        // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+        // 2. 如果存在，更新Record以设置为每周重复
+        if (oldRecurrence == null) {
+            await createRecord(selectedNote.id, weeklyRecurrence); // 创建新的重复记录
+        } else {
+            await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
+        }
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+        var body = "> " + timestamp + " Repeat Set As: Weekly";
+        body += "\n" + note.body;
+        console.log("body:" + body)
+
+        // 判断 note.title 中是否含有 @ 字符
+        // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+        var repeatType = "Weekly"
+        var newTitle = ""
+        var titleBeforeAt = ""
+        if (note.title.includes('🔄')) {
+            // 提取 @ 字符之前的字符串
+            titleBeforeAt = note.title.split('🔄')[0].trimRight();
+            console.log("@ 字符之前的字符串: " + titleBeforeAt);
+        } else {
+            titleBeforeAt = note.title
+            console.log("标题中不包含 @ 字符");
+        }
+        newTitle = titleBeforeAt + " 🔄" + repeatType
+
+        // 更新当前笔记的 body
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+        await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
+
+        // 设置alarm 为当前时间
+        // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
+        openRecurrenceDialog()
+        // 输出日志，确认添加了每周重复
+        console.log("Weekly repeat added to node: ", selectedNote.id);
+        console.log("Weekly repeat added to node: ", selectedNote.title);
     }
-    joplin.views.dialogs.showMessageBox("已设置为: 每周重复一次")
-
-    // 获取当前笔记的 body
-    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
-    // 获取当前时间的时间戳
-    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
-    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
-    var body = "> " + timestamp + " Repeat Set As: Weekly";
-    body += "\n" + note.body;
-    console.log("body:" + body)
-
-    // 判断 note.title 中是否含有 @ 字符
-    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
-    var repeatType = "Weekly"
-    var newTitle = ""
-    var titleBeforeAt = ""
-    if (note.title.includes('🔄')) {
-        // 提取 @ 字符之前的字符串
-        titleBeforeAt = note.title.split('🔄')[0].trimRight();
-        console.log("@ 字符之前的字符串: " + titleBeforeAt);
-    } else {
-        titleBeforeAt = note.title
-        console.log("标题中不包含 @ 字符");
-    }
-    newTitle = titleBeforeAt + " 🔄" + repeatType
-
-    // 更新当前笔记的 body
-    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
-    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
-
-    // 设置alarm 为当前时间
-    // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
-    openRecurrenceDialog()
-    // 输出日志，确认添加了每周重复
-    console.log("Weekly repeat added to node: ", selectedNote.id);
-    console.log("Weekly repeat added to node: ", selectedNote.title);
 }
 
 
@@ -431,50 +443,54 @@ export async function setDailyRecurrence(){
     weeklyRecurrence.weekThursday = true; // 设置周四为每周重复
     weeklyRecurrence.weekFriday = true; // 设置周五为每周重复
     
-    // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
-    // 2. 如果存在，更新Record以设置为每周重复
-    if (oldRecurrence == null) {
-        await createRecord(selectedNote.id, weeklyRecurrence); // 创建新的重复记录
-    } else {
-        await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
+    var ok_cancel = await joplin.views.dialogs.showMessageBox("是否设置为: 工作日每天重复")
+    if(ok_cancel === 0){
+            
+        // 1. 首先检查是否存在Record，如果没有则插入一个新的记录
+        // 2. 如果存在，更新Record以设置为每周重复
+        if (oldRecurrence == null) {
+            await createRecord(selectedNote.id, weeklyRecurrence); // 创建新的重复记录
+        } else {
+            await updateRecord(selectedNote.id, weeklyRecurrence); // 更新现有的重复记录
+        }
+
+        // 获取当前笔记的 body
+        const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
+        // 获取当前时间的时间戳
+        const options = { hour12: false, timeZone: 'Asia/Shanghai' };
+        var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
+        var body = "> " + timestamp + " Repeat Set As: Daily On Weekdays";
+        body += "\n" + note.body;
+        console.log("body:" + body)
+
+        // 判断 note.title 中是否含有 @ 字符
+        // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
+        var repeatType = "Weekdays"
+        var newTitle = ""
+        var titleBeforeAt = ""
+        if (note.title.includes('🔄')) {
+            // 提取 @ 字符之前的字符串
+            titleBeforeAt = note.title.split('🔄')[0].trimRight();
+            console.log("@ 字符之前的字符串: " + titleBeforeAt);
+        } else {
+            titleBeforeAt = note.title
+            console.log("标题中不包含 @ 字符");
+        }
+        newTitle = titleBeforeAt + " 🔄" + repeatType
+
+        // 更新当前笔记的 body
+        // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
+        await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
+
+        // 设置alarm 为当前时间 + 2 hours
+        // await setTaskDueDate(selectedNote.id, new Date())
+        // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
+        // 输出日志，确认添加了每周重复
+        openRecurrenceDialog()
+        console.log("Weekday repeat added to node: ", selectedNote.id);
+        console.log("Weekday repeat added to node: ", selectedNote.title);
     }
-    joplin.views.dialogs.showMessageBox("已设置为: 工作日每天重复")
 
-    // 获取当前笔记的 body
-    const note = await joplin.data.get(['notes', selectedNote.id], { fields: ['id', 'title', 'body'] });
-    // 获取当前时间的时间戳
-    const options = { hour12: false, timeZone: 'Asia/Shanghai' };
-    var timestamp = new Date().toLocaleString('sv-SE', options); // 可以根据需要调整日期格式
-    var body = "> " + timestamp + " Repeat Set As: Daily On Weekdays";
-    body += "\n" + note.body;
-    console.log("body:" + body)
-
-    // 判断 note.title 中是否含有 @ 字符
-    // repeatType包含"No_Repeat", "Minutely","Daily", "Weekly", "WeekDays", "Monthly", "Yearly"
-    var repeatType = "Weekdays"
-    var newTitle = ""
-    var titleBeforeAt = ""
-    if (note.title.includes('🔄')) {
-        // 提取 @ 字符之前的字符串
-        titleBeforeAt = note.title.split('🔄')[0].trimRight();
-        console.log("@ 字符之前的字符串: " + titleBeforeAt);
-    } else {
-        titleBeforeAt = note.title
-        console.log("标题中不包含 @ 字符");
-    }
-    newTitle = titleBeforeAt + " 🔄" + repeatType
-
-    // 更新当前笔记的 body
-    // await joplin.data.put(['notes', selectedNote.id], null, { body: body, title: newTitle, is_todo: true});
-    await joplin.data.put(['notes', selectedNote.id], null, { title: newTitle, is_todo: true});
-
-    // 设置alarm 为当前时间 + 2 hours
-    // await setTaskDueDate(selectedNote.id, new Date())
-    // await setTaskDueDate(selectedNote.id, new Date(Date.now() + 2 * 3600 * 1000))
-    // 输出日志，确认添加了每周重复
-    openRecurrenceDialog()
-    console.log("Weekday repeat added to node: ", selectedNote.id);
-    console.log("Weekday repeat added to node: ", selectedNote.title);
 }
 export async function setOverdueTodosToToday(){
     var startOfToday = new Date();
